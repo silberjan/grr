@@ -29,7 +29,7 @@ class GreeterServer < Helloworld::Greeter::Service
   def say_hello(hello_req, _call)
     Log.log.info("hello requested for #{hello_req.name}")
     # Log.log.info("Metadata user is #{_call.metadata.user}")
-    # sleep(3)
+    sleep(3)
     Log.log.info("#{hello_req.name} was greeted 😁")
     Helloworld::HelloReply.new(message: "Hello #{hello_req.name}")
   end

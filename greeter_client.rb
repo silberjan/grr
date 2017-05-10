@@ -8,6 +8,20 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
 require 'grpc'
 require 'helloworld_services_pb'
+require 'concurrent'
+require 'logger'
+
+class Log
+  def self.log
+    if @logger.nil?
+      @logger = Logger.new STDOUT
+      @logger.level = Logger::DEBUG
+      @logger.datetime_format = '%Y-%m-%d %H:%M:%S '
+    end
+    @logger
+  end
+end
+
 
 def main
 
@@ -17,18 +31,51 @@ def main
   #check if CLI args were enterd. If not use 'world' as user name
   user = ARGV.size > 0 ?  ARGV[0] : 'world' 
 
+  # pool = Concurrent::FixedThreadPool.new(3)
+  pool = Concurrent::CachedThreadPool.new
 
-  begin
-    resp = stub.say_hello(Helloworld::HelloRequest.new(name: user))
-    p "Message form Server: #{resp.message}"
-  end 
+  Log.log.info("Thread pool opened")
 
-  begin
-    resp = stub.say_hello_again(Helloworld::HelloRequest.new(name: user))
-    p "Message from Server: #{resp.message}"
-  rescue GRPC::BadStatus => e
-    p "Error from Server. Code: #{e.code} Details: #{e.details}"
+  pool.post do
+
+    begin
+      Log.log.info("Start hello request")
+      resp = stub.say_hello(Helloworld::HelloRequest.new(name: user))
+      Log.log.info("Message form Server: #{resp.message}")
+    rescue GRPC::BadStatus => e
+      Log.log.error("Error from Server. Code: #{e.code} Details: #{e.details}")
+    end
+      
   end
+
+   pool.post do
+
+    begin
+      Log.log.info("Start hello request")
+      resp = stub.say_hello(Helloworld::HelloRequest.new(name: 'Tobi'))
+      Log.log.info("Message form Server: #{resp.message}")
+    rescue GRPC::BadStatus => e
+      Log.log.error("Error from Server. Code: #{e.code} Details: #{e.details}")
+    end
+      
+  end
+
+  pool.post do
+
+    begin
+      Log.log.info("Start hello_again request")
+      resp = stub.say_hello_again(Helloworld::HelloRequest.new(name: user))
+      Log.log.info("Message form Server: #{resp.message}")
+    rescue GRPC::BadStatus => e
+      Log.log.error("Error from Server. Code: #{e.code} Details: #{e.details}")
+    end
+      
+  end
+
+  pool.shutdown
+  pool.wait_for_termination
+
+  Log.log.info("all parallel requests done")
 
   #  # stream
   # begin
