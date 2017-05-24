@@ -8,7 +8,6 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
 require 'grpc'
 require 'helloworld_services_pb'
-require 'timeout'
 require 'logger'
 
 class Log
@@ -36,8 +35,11 @@ class GreeterServer < Helloworld::Greeter::Service
 
   # say_hello_again implements the SayHelloAgain rpc method.
   def say_hello_again(hello_req, _unused_call)
-    raise GRPC::BadStatus.new(GRPC::Core::StatusCodes::UNIMPLEMENTED, "Hello Again is not yet implemented")
-    # Helloworld::HelloReply.new(message: "Hello again #{hello_req.name}")
+    if hello_req.name.eql? "Jan"
+      raise GRPC::BadStatus.new(GRPC::Core::StatusCodes::INVALID_ARGUMENT, "Jan will not be greeted again")
+    else
+      Helloworld::HelloReply.new(message: "Hello again #{hello_req.name}")
+    end
   end
 
   # hello_stream implements the HelloStream rpc method.

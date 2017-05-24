@@ -22,6 +22,9 @@ class Log
   end
 end
 
+def time_diff_milli(start, finish)
+   (finish - start) * 1000.0
+end
 
 def main
 
@@ -39,9 +42,12 @@ def main
   pool.post do
 
     begin
+      t1 = Time.now
       Log.log.info("Start hello request")
-      resp = stub.say_hello(Helloworld::HelloRequest.new(name: user))
-      Log.log.info("Message form Server: #{resp.message}")
+      resp = stub.say_hello(Helloworld::HelloRequest.new(name: 'Felix'))
+      t2 = Time.now
+      msecs = time_diff_milli t1, t2
+      Log.log.info("Message form Server: #{resp.message} (#{msecs}ms)")
     rescue GRPC::BadStatus => e
       Log.log.error("Error from Server. Code: #{e.code} Details: #{e.details}")
     end
@@ -51,9 +57,12 @@ def main
    pool.post do
 
     begin
+      t1 = Time.now
       Log.log.info("Start hello request")
       resp = stub.say_hello(Helloworld::HelloRequest.new(name: 'Tobi'))
-      Log.log.info("Message form Server: #{resp.message}")
+      t2 = Time.now
+      msecs = time_diff_milli t1, t2
+      Log.log.info("Message form Server: #{resp.message} (#{msecs}ms)")
     rescue GRPC::BadStatus => e
       Log.log.error("Error from Server. Code: #{e.code} Details: #{e.details}")
     end
@@ -63,9 +72,23 @@ def main
   pool.post do
 
     begin
+      t1 = Time.now
       Log.log.info("Start hello_again request")
-      resp = stub.say_hello_again(Helloworld::HelloRequest.new(name: user))
-      Log.log.info("Message form Server: #{resp.message}")
+      resp = stub.say_hello_again(Helloworld::HelloRequest.new(name: 'Felix'))
+      t2 = Time.now
+      msecs = time_diff_milli t1, t2
+      Log.log.info("Message form Server: #{resp.message} (#{msecs}ms)")
+    rescue GRPC::BadStatus => e
+      Log.log.error("Error from Server. Code: #{e.code} Details: #{e.details}")
+    end
+
+    begin
+      t1 = Time.now
+      Log.log.info("Start hello_again request")
+      resp = stub.say_hello_again(Helloworld::HelloRequest.new(name: 'Jan'))
+      t2 = Time.now
+      msecs = time_diff_milli t1, t2
+      Log.log.info("Message form Server: #{resp.message} (#{msecs}ms)")
     rescue GRPC::BadStatus => e
       Log.log.error("Error from Server. Code: #{e.code} Details: #{e.details}")
     end

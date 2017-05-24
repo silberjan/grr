@@ -1,0 +1,25 @@
+// usage: grpc_tools_ruby_protoc -I ./protos --ruby_out=lib --grpc_out=lib ./protos/helloworld.proto
+
+syntax = "proto3";
+
+package xikolo;
+
+service RestService {
+  rpc DoRequest (RestRequest) returns (RestResponse) {}
+}
+
+// The request message containing the user's name.
+message RestRequest {
+  string method = 1;
+  string location = 2;
+  string queryString = 3;
+  string headers = 4;
+  string body = 5;
+}
+
+// The response message containing the greetings
+message RestResponse {
+  string headers = 1;
+  int32 status = 2;
+  string body = 3;
+}
