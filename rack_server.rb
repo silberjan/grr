@@ -40,7 +40,7 @@ class GrpcServer < Xikolo::RestService::Service
     
     env = new_env(rest_req['method'],rest_req.location,rest_req.queryString)
 
-    status, headers, body = app.call(env)
+    status, headers, body = GrpcRackServer.app.call(env)
 
     Xikolo::RestResponse.new(headers: headers, status: status, body: body)
   end
