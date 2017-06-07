@@ -1,8 +1,2 @@
-require 'sinatra'
- 
-get '/' do
-'Hello world!'
-end
-
-# Run application for rack config.ru
+require './app'
 run Sinatra::Application

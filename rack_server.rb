@@ -4,22 +4,11 @@ this_dir = File.expand_path(File.dirname(__FILE__))
 lib_dir = File.join(this_dir, 'lib')
 $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
-require 'socket'
 require 'rack'
-require 'sinatra'
 require 'grpc'
 require 'rest_services_pb'
 
-class Logger
-  def self.log
-    if @logger.nil?
-      @logger = Logger.new STDOUT
-      @logger.level = Logger::DEBUG
-      @logger.datetime_format = '%Y-%m-%d %H:%M:%S '
-    end
-    @logger
-  end
-end
+require './logger'
 
 # Simple, rack-compliant web server
 class GrpcRackServer
@@ -88,10 +77,3 @@ module Rack
 end
 
 Rack::Handler.register('grpc_server', 'Rack::Handler::GrpcRackServer')
-
-# Sinatra app 
-# set :server, :grpc_server
-
-# get '/' do
-#   'Hello world!'
-# end
