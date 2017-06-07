@@ -38,6 +38,7 @@ class GrpcRackServer
     s.handle(GrpcServer)
     s.run_till_terminated
   end
+  
 end
 
 # Grpc service implementation
@@ -85,11 +86,12 @@ module Rack
     end
   end
 end
+
 Rack::Handler.register('grpc_server', 'Rack::Handler::GrpcRackServer')
 
 # Sinatra app 
-set :server, :grpc_server
+# set :server, :grpc_server
 
-get '/' do
-  'Hello world!'
-end
+# get '/' do
+#   'Hello world!'
+# end
