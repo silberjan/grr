@@ -1,9 +1,4 @@
-# -*- ruby -*-
-# encoding: utf-8
+# frozen_string_literal: true
+source "https://rubygems.org"
 
-source 'https://rubygems.org/'
-
-gemspec
-
-gem 'concurrent-ruby', require: 'concurrent'
-gem 'rack'
+# gem "rails"

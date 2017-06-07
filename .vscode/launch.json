@@ -6,8 +6,8 @@
       "name": "Debug Rack Server",
       "type": "Ruby",
       "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "program": "${workspaceRoot}/rack_server.rb"
+      // "cwd": "${workspaceRoot}",
+      "program": "rackup -r ./rack_server.rb -s grpc_server ./config.ru"
     },
     {
       "name": "Debug Rack Client",
