@@ -27,7 +27,7 @@ end
 def main
 
   # create client stub for the specified pb service
-  stub = Xikolo::RestService::Stub.new('localhost:50051', :this_channel_is_insecure)
+  stub = Grr::RestService::Stub.new('localhost:50051', :this_channel_is_insecure)
 
   # pool = Concurrent::FixedThreadPool.new(3)
   pool = Concurrent::CachedThreadPool.new
@@ -39,7 +39,7 @@ def main
     begin
       t1 = Time.now
       Logger.log.info("Start REST request")
-      restRequest = Xikolo::RestRequest.new(method: 'GET',location: '/test/route', queryString: 'test=2', headers: 'Accept: text/plain', body: '{data:123}')
+      restRequest = Grr::RestRequest.new(method: 'GET',location: '/test/route', queryString: 'test=2', headers: 'Accept: text/plain', body: '{data:123}')
       resp = stub.do_request(restRequest)
       t2 = Time.now
       msecs = time_diff_milli t1, t2

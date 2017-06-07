@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+## start the server: rackup -r rack_server.rb -s grpc_server config.ru
+
 this_dir = File.expand_path(File.dirname(__FILE__))
 lib_dir = File.join(this_dir, 'lib')
 $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
@@ -31,7 +33,7 @@ class GrpcRackServer
 end
 
 # Grpc service implementation
-class GrpcServer < Xikolo::RestService::Service
+class GrpcServer < Grr::RestService::Service
 
   # do_request implements the DoRequest rpc method.
   def do_request(rest_req, _call)
@@ -42,7 +44,7 @@ class GrpcServer < Xikolo::RestService::Service
 
     status, headers, body = GrpcRackServer.app.call(env)
 
-    Xikolo::RestResponse.new(headers: headers, status: status, body: body)
+    Grr::RestResponse.new(headers: headers, status: status, body: body)
   end
 
   def new_env(method, location, queryString)

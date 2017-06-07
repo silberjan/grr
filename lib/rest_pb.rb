@@ -4,21 +4,21 @@
 require 'google/protobuf'
 
 Google::Protobuf::DescriptorPool.generated_pool.build do
-  add_message "xikolo.RestRequest" do
+  add_message "grr.RestRequest" do
     optional :method, :string, 1
     optional :location, :string, 2
     optional :queryString, :string, 3
     optional :headers, :string, 4
     optional :body, :string, 5
   end
-  add_message "xikolo.RestResponse" do
+  add_message "grr.RestResponse" do
     optional :headers, :string, 1
     optional :status, :int32, 2
     optional :body, :string, 3
   end
 end
 
-module Xikolo
-  RestRequest = Google::Protobuf::DescriptorPool.generated_pool.lookup("xikolo.RestRequest").msgclass
-  RestResponse = Google::Protobuf::DescriptorPool.generated_pool.lookup("xikolo.RestResponse").msgclass
+module Grr
+  RestRequest = Google::Protobuf::DescriptorPool.generated_pool.lookup("grr.RestRequest").msgclass
+  RestResponse = Google::Protobuf::DescriptorPool.generated_pool.lookup("grr.RestResponse").msgclass
 end
