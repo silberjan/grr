@@ -43,6 +43,8 @@ def main
       resp = stub.do_request(restRequest)
       t2 = Time.now
       msecs = time_diff_milli t1, t2
+      Logger.log.info("Code: #{resp.status}")
+      Logger.log.info("Headers: #{resp.headers}")
       Logger.log.info("Message form Server: #{resp.body} (#{msecs}ms)")
     rescue GRPC::BadStatus => e
       Logger.log.error("Error from Server. Code: #{e.code} Details: #{e.details}")
