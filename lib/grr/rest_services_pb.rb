@@ -5,7 +5,7 @@
 #
 
 require 'grpc'
-require 'rest_pb'
+require 'grr/rest_pb'
 
 module Grr
   module RestService
