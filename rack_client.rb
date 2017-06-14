@@ -55,7 +55,7 @@ def main
   pool.shutdown
   pool.wait_for_termination
 
-  Logger.log.info("all parallel requests done")
+  Logger.log.info("Thread pool closed")
 
 end
 

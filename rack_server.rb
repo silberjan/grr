@@ -74,7 +74,7 @@ class GrpcServer < Grr::RestService::Service
       'PATH_INFO'        => location,
       'QUERY_STRING'     => queryString,
       'SERVER_NAME'      => 'localhost',
-      'SERVER_PORT'      => '8080',
+      'SERVER_PORT'      => '50051',
       'rack.version'     => Rack.version.split('.'),
       'rack.url_scheme'  => 'http',
       'rack.input'       => StringIO.new(body),
