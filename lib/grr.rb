@@ -1,4 +1,5 @@
-#
+require "grr/version"
+
 
 module Grr
   require 'grr/rest_pb'
