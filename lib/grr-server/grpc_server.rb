@@ -27,6 +27,7 @@ module Grr
 
       bodyString = ""
       body.each do |s|
+        logger.info(s);
         bodyString = s
       end
 
@@ -36,13 +37,13 @@ module Grr
     def new_env(method, location, queryString, body)
       {
         'REQUEST_METHOD'   => method,
-        'HTTP_ACCEPT'      => 'application/json; text/plain',
+        'HTTP_ACCEPT'      => 'application/json',
         'CONTENT_TYPE'     => 'application/json',
         'SCRIPT_NAME'      => '',
         'PATH_INFO'        => location,
         'QUERY_STRING'     => queryString,
         'SERVER_NAME'      => 'localhost',
-        'SERVER_PORT'      => '50051',
+        'SERVER_PORT'      => '6575',
         'rack.version'     => Rack.version.split('.'),
         'rack.url_scheme'  => 'http',
         'rack.input'       => StringIO.new(body),

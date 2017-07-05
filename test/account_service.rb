@@ -23,10 +23,10 @@ def main
         location:     '/sessions', 
         queryString:  '', 
         headers:      'Accept: text/plain, Content-Type: application/json',
-        body:         '{ user: \'00000001-3100-4444-9999-000000000001\' }' #Userid of Kevin Cool Jr
+        body:         '{ "user": "00000001-3100-4444-9999-000000000001" }' #Userid of Kevin Cool Jr
     )
 
-    client.threadedRequests([rootRequest])
+    client.concurrentRequests([loginRequest])
 
 end
 

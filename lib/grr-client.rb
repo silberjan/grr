@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 this_dir = File.expand_path(File.dirname(__FILE__))
 lib_dir = File.join(this_dir)
 $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
@@ -21,7 +19,7 @@ module Grr
       (finish - start) * 1000.0
     end
 
-    def threadedRequests(requestArray)
+    def concurrentRequests(requestArray)
         # create client stub for the specified pb service
         url = "#{@host}:#{@port}"
         logger.info(url)
@@ -41,8 +39,8 @@ module Grr
                 t2 = Time.now
                 msecs = time_diff_milli t1, t2
                 logger.info("Code: #{resp.status}")
-                logger.info("Headers: #{resp.headers}")
-                logger.info("Message form Server: #{resp.body} (#{msecs}ms)")
+                # logger.info("Headers: #{resp.headers}")
+                logger.info("Body: #{resp.body} (#{msecs}ms)")
                 rescue GRPC::BadStatus => e
                     logger.error("Error from Server. Code: #{e.code} Details: #{e.details}")
                 end
