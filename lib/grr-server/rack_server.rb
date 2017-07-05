@@ -6,14 +6,11 @@ module Grr
 
     def initialize(app, **kwargs)
       @app = app
-      @host = kwargs.fetch(:Host, '0.0.0.0')
+      @host = kwargs.fetch(:Host, 'localhost')
       @port = kwargs.fetch(:Port, '50051')
-
-      Encoding::default_external = 'ASCII-8BIT'
-      logger.info(Encoding::default_external())
     end
-
     def start
+
       url = "#{@host}:#{@port}"
 
       s = GRPC::RpcServer.new
@@ -33,5 +30,6 @@ module Grr
     def logger
       @logger ||= Logger.new(STDOUT)
     end
+
   end
 end

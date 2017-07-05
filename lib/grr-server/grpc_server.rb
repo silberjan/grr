@@ -36,6 +36,8 @@ module Grr
     def new_env(method, location, queryString, body)
       {
         'REQUEST_METHOD'   => method,
+        'HTTP_ACCEPT'      => 'application/json; text/plain',
+        'CONTENT_TYPE'     => 'application/json',
         'SCRIPT_NAME'      => '',
         'PATH_INFO'        => location,
         'QUERY_STRING'     => queryString,
