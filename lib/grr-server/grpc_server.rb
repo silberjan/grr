@@ -42,6 +42,7 @@ module Grr
         'SCRIPT_NAME'      => '',
         'PATH_INFO'        => location,
         'QUERY_STRING'     => queryString,
+        'CONTENT_LENGTH'   => body.bytesize.to_s,
         'SERVER_NAME'      => 'localhost',
         'SERVER_PORT'      => '6575',
         'rack.version'     => Rack.version.split('.'),
@@ -50,7 +51,7 @@ module Grr
         'rack.errors'      => StringIO.new(''),
         'rack.multithread' => false,
         'rack.run_once'    => false,
-        'rack.multiprocess'=> false
+        'rack.multiprocess'=> false,
       }
     end
   end
