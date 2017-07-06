@@ -28,6 +28,7 @@ module Grr
       bodyString = ""
       body.each do |s|
         logger.info(s);
+        File.write('./error.html', s)
         bodyString = s
       end
 

@@ -5,8 +5,11 @@ lib_dir = File.join(this_dir, '../lib')
 $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
 require 'grr-client'
+require 'json'
 
 def main
+
+    logger = Logger.new(STDOUT)
 
     client = Grr::Client.new(Port: "6575", Host:"localhost" )
 
@@ -26,7 +29,21 @@ def main
         body:         '{ "user": "00000001-3100-4444-9999-000000000001" }' #Userid of Kevin Cool Jr
     )
 
-    client.concurrentRequests([loginRequest])
+    resp = client.request(loginRequest)
+    json = JSON.parse(resp.body)
+    sessionId = json["id"]
+    logger.info("SessionId is #{sessionId}")
+
+    sessionRequest = Grr::RestRequest.new(
+        method:       'GET',
+        location:     '/sessions/' + sessionId, 
+        queryString:  'embed=user,permissions,features', 
+        headers:      'Accept: text/plain, Content-Type: application/json',
+        body:         ''
+    )
+
+    session = client.request(sessionRequest)
+    # client.concurrentRequests([rootRequest])
 
 end
 
