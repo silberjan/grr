@@ -29,21 +29,22 @@ def main
         body:         '{ "user": "00000001-3100-4444-9999-000000000001" }' #Userid of Kevin Cool Jr
     )
 
-    resp = client.request(loginRequest)
-    json = JSON.parse(resp.body)
-    sessionId = json["id"]
+    # resp = client.request(loginRequest)
+    # json = JSON.parse(resp.body)
+    # sessionId = json["id"]
+    sessionId = 'b43b98fa-1795-4dd2-8d90-1984d67d9ece'
     logger.info("SessionId is #{sessionId}")
 
     sessionRequest = Grr::RestRequest.new(
         method:       'GET',
-        location:     '/sessions/' + sessionId, 
+        location:     '/sessions/' + sessionId + '/', 
         queryString:  'embed=user,permissions,features', 
         headers:      'Accept: text/plain, Content-Type: application/json',
         body:         ''
     )
 
-    session = client.request(sessionRequest)
-    # client.concurrentRequests([rootRequest])
+    # session = client.request(sessionRequest)
+    client.concurrentRequests([sessionRequest,sessionRequest,sessionRequest,sessionRequest,sessionRequest,sessionRequest,sessionRequest,sessionRequest,sessionRequest,sessionRequest])
 
 end
 
