@@ -1,3 +1,4 @@
+require 'timeout'
 
 module Grr
   # Grpc service implementation
@@ -26,8 +27,9 @@ module Grr
 
       # Execute the app's .call() method (Rack standard)
       # blocks execution, sync call
-      status, headers, body = app.call(env)
-
+      status = Timeout::timeout(5) {
+        status, headers, body = app.call(env)
+      }
       # logger.info("Status is: #{status}");
       # logger.info("Headers are: #{headers.to_s}");
 
@@ -35,10 +37,9 @@ module Grr
       bodyString = reassemble_chunks(body)
       File.write('./out.html',bodyString) # For debugging. Errors are returned in html sometimes, hard to read on the command line.
 
+      logger.info('Got response.');
       # Create new Response Object
       Grr::RestResponse.new(headers: headers.to_s, status: status, body: bodyString)
-
-      logger.info('Response sent.');
     end
 
     # Rack needs ad ENV to process the request
