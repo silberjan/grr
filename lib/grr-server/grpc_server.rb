@@ -1,5 +1,3 @@
-require 'timeout'
-
 module Grr
   # Grpc service implementation
   class GrpcServer < Grr::RestService::Service
@@ -27,9 +25,7 @@ module Grr
 
       # Execute the app's .call() method (Rack standard)
       # blocks execution, sync call
-      status = Timeout::timeout(5) {
-        status, headers, body = app.call(env)
-      }
+      status, headers, body = app.call(env)
       # logger.info("Status is: #{status}");
       # logger.info("Headers are: #{headers.to_s}");
 
