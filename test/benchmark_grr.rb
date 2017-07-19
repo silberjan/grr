@@ -8,6 +8,8 @@ require 'grr-client'
 require 'json'
 
 @execution_times, @threads, *rest = ARGV
+@execution_times = @execution_times.to_i
+@threads = @threads.to_i
 
 @logger = Logger.new(STDOUT)
 
@@ -59,8 +61,8 @@ def sessionRequest(sId)
     )
 
     #session = @client.request(sessionRequest)
-    reqArray = Array.new(@execution_times.to_i || 10, sessionRequest)
-    @client.concurrentRequests(reqArray,@threads)
+    reqArray = Array.new(@execution_times.zero? ? 10 : @execution_times, sessionRequest)
+    @client.concurrentRequests(reqArray,@threads.zero? ? 5 : @threads)
 
 end
 

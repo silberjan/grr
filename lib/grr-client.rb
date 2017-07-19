@@ -38,7 +38,7 @@ module Grr
       #pool = Concurrent::CachedThreadPool.new
       puts "\n\n"
       logger.info "-------------------------------------------------"
-      logger.info "\e[32mStarting #{requestArray.size} concurrent gRPC requests\e[0m"
+      logger.info "\e[32mStarting #{requestArray.size} concurrent gRPC requests in #{threads} threads\e[0m"
       logger.info "-------------------------------------------------"
       successful = 0
       failed = 0     
