@@ -22,31 +22,58 @@ module Grr
     # Takes a Request Object and executes it
     def request(req)
       t1 = Time.now
-      logger.info("Start REST request")
+      # logger.info("Start REST request")
       resp = @stub.do_request(req)
       t2 = Time.now
       msecs = time_diff_milli t1, t2
       logger.info("Received Response #{resp.status} in #{msecs}ms")
-      resp
+      msecs
     rescue GRPC::BadStatus => e
       logger.error("Error from Server. Code: #{e.code} Details: #{e.details}")
+      false
     end
 
     # Takes an array of Requests and executes them in parallel
     def concurrentRequests(requestArray)
-      pool = Concurrent::CachedThreadPool.new
+      #pool = Concurrent::CachedThreadPool.new
+      puts "\n\n"
+      logger.info "-------------------------------------------------"
+      logger.info "\e[32mStarting #{requestArray.size} concurrent requests\e[0m"
+      logger.info "-------------------------------------------------"
+      successful = 0
+      failed = 0     
+      totalTime = 0
+      pool = Concurrent::ThreadPoolExecutor.new(
+         min_threads: 5,
+         max_threads: 5,
+         max_queue: 1000,
+         fallback_policy: :abort
+      )
+
       logger.info("Thread pool opened")
       t1 = Time.now
       requestArray.each { |req|
           pool.post do
-              request req
+              msecs = request req
+	      if msecs
+		  successful += 1
+                  totalTime += msecs
+	      else
+		 failed += 1
+	      end
           end
       }
       pool.shutdown
       pool.wait_for_termination
       t2 = Time.now
       msecs = time_diff_milli t1, t2
-      logger.info("Thread pool closed after #{msecs}ms")
+      puts "\n\n"
+      logger.info "---------------------------------------------------------"
+      logger.info "\e[32mCompleted requests:                  #{successful}\e[0m"
+      logger.info "\e[31mFailed requests:                     #{failed}\e[0m"
+      logger.info "\e[36mTotal execution time (incl fails):   #{msecs.round(2)}ms\e[0m"
+      logger.info "\e[35mAverage time/request (successful)    #{(totalTime/successful).round(2)}ms\e[0m"
+      logger.info "---------------------------------------------------------"
     end
 
     private

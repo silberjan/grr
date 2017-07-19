@@ -16,24 +16,26 @@ module Grr
 
       # Duplicate is needed, because rest_req['body'] is frozen.
       bodyDup = rest_req['body'].dup
-      bodyDup.force_encoding("ASCII-8BIT") # Rack rquires this encoding
+      bodyDup.force_encoding "ASCII-8BIT" # Rack rquires this encoding
       qsDup = rest_req['queryString'].dup
-      qsDup.force_encoding("ASCII-8BIT")
+      qsDup.force_encoding "ASCII-8BIT"
 
       # Create rack env for the request
       env = new_env(rest_req['method'],rest_req['location'],qsDup,bodyDup)
 
       # Execute the app's .call() method (Rack standard)
       # blocks execution, sync call
+      logger.info "Executing app.call()"
+      # binding.pry
       status, headers, body = app.call(env)
-      # logger.info("Status is: #{status}");
-      # logger.info("Headers are: #{headers.to_s}");
+      logger.info "Status is: #{status}"
+      # logger.info("Headers are: #{headers.to_s}")
 
       # Parse the body (may be chunked)
       bodyString = reassemble_chunks(body)
       File.write('./out.html',bodyString) # For debugging. Errors are returned in html sometimes, hard to read on the command line.
 
-      logger.info('Got response.');
+      logger.info "Got response.";
       # Create new Response Object
       Grr::RestResponse.new(headers: headers.to_s, status: status, body: bodyString)
     end
@@ -44,8 +46,8 @@ module Grr
       {
         'REMOTE_ADDR'      => '::1',
         'REQUEST_METHOD'   => method,
-        'HTTP_ACCEPT'      => 'application/json',
-        'CONTENT_TYPE'     => 'application/json',
+        'HTTP_ACCEPT'      => 'application/json', # hardcoded TODO use request header
+        'CONTENT_TYPE'     => 'application/json', # hardcoded TODO use request header
         'SCRIPT_NAME'      => '',
         'PATH_INFO'        => location,
         'REQUEST_PATH'     => location,
