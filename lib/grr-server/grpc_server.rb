@@ -25,17 +25,17 @@ module Grr
 
       # Execute the app's .call() method (Rack standard)
       # blocks execution, sync call
-      logger.info "Executing app.call()"
+      t1 = Time.now
       # binding.pry
       status, headers, body = app.call(env)
-      logger.info "Status is: #{status}"
-      # logger.info("Headers are: #{headers.to_s}")
+      t2 = Time.now
+      msecs = time_diff_milli t1, t2
+      logger.info "Got code #{status} (#{msecs})"
 
       # Parse the body (may be chunked)
       bodyString = reassemble_chunks(body)
-      File.write('./out.html',bodyString) # For debugging. Errors are returned in html sometimes, hard to read on the command line.
+      # File.write('./out.html',bodyString) # For debugging. Errors are returned in html sometimes, hard to read on the command line.
 
-      logger.info "Got response.";
       # Create new Response Object
       Grr::RestResponse.new(headers: headers.to_s, status: status, body: bodyString)
     end
@@ -70,13 +70,18 @@ module Grr
       }
     end
 
+    private
+    def time_diff_milli(start, finish)
+      (finish - start) * 1000.0
+    end
+
     def reassemble_chunks raw_data
       reassembled_data = ""
       position = 0
       raw_data.each do |chunk|
         end_of_chunk_size = chunk.index "\r\n"
         if end_of_chunk_size.nil?
-          logger.info("no chunk found")
+          # logger.info("no chunk found")
           reassembled_data = chunk
           break
         end
