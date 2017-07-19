@@ -34,19 +34,19 @@ module Grr
     end
 
     # Takes an array of Requests and executes them in parallel
-    def concurrentRequests(requestArray)
+    def concurrentRequests(requestArray, threads = 5)
       #pool = Concurrent::CachedThreadPool.new
       puts "\n\n"
       logger.info "-------------------------------------------------"
-      logger.info "\e[32mStarting #{requestArray.size} concurrent requests\e[0m"
+      logger.info "\e[32mStarting #{requestArray.size} concurrent gRPC requests\e[0m"
       logger.info "-------------------------------------------------"
       successful = 0
       failed = 0     
       totalTime = 0
       pool = Concurrent::ThreadPoolExecutor.new(
-         min_threads: 5,
-         max_threads: 5,
-         max_queue: 1000,
+         min_threads: threads,
+         max_threads: threads,
+         max_queue: 100000,
          fallback_policy: :abort
       )
 
@@ -55,13 +55,13 @@ module Grr
       requestArray.each { |req|
           pool.post do
               msecs = request req
-	      if msecs
-		  successful += 1
-                  totalTime += msecs
-	      else
-		 failed += 1
-	      end
-          end
+	        if msecs
+		        successful += 1
+            totalTime += msecs
+	        else
+		        failed += 1
+	        end
+        end
       }
       pool.shutdown
       pool.wait_for_termination

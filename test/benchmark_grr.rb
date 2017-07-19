@@ -7,12 +7,11 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 require 'grr-client'
 require 'json'
 
-@execution_times, *rest = ARGV
+@execution_times, @threads, *rest = ARGV
 
 @logger = Logger.new(STDOUT)
 
 @client = Grr::Client.new(Port: "6575", Host:"localhost" )
-
 
 
 def rootRequest
@@ -61,7 +60,7 @@ def sessionRequest(sId)
 
     #session = @client.request(sessionRequest)
     reqArray = Array.new(@execution_times.to_i || 10, sessionRequest)
-    @client.concurrentRequests(reqArray)
+    @client.concurrentRequests(reqArray,@threads)
 
 end
 
