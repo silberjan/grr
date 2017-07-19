@@ -85,6 +85,8 @@ def concurrentRequests(requestArray, threads = 5)
 	msecs = time_diff_milli t1, t2
 	puts "\n\n"
 	@logger.info "---------------------------------------------------------"
+    @logger.info "\e[32mExecudted #{requestArray.size} concurrent HTTP requests on #{threads} threads\e[0m"
+	@logger.info "---------------------------------------------------------"
 	@logger.info "\e[32mCompleted requests:                  #{successful}\e[0m"
 	@logger.info "\e[31mFailed requests:                     #{failed}\e[0m"
 	@logger.info "\e[36mTotal execution time (incl fails):   #{msecs.round(2)}ms\e[0m"
