@@ -30,7 +30,7 @@ module Grr
       status, headers, body = app.call(env)
       t2 = Time.now
       msecs = time_diff_milli t1, t2
-      logger.info "Got code #{status} (#{msecs})"
+      logger.info "Got code #{status} (#{msecs.round(2)}ms)"
 
       # Parse the body (may be chunked)
       bodyString = reassemble_chunks(body)
