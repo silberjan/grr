@@ -28,8 +28,17 @@ module Grr
       msecs = time_diff_milli t1, t2
       logger.info("Received Response #{resp.status} in #{msecs}ms")
       msecs
-    rescue GRPC::BadStatus => e
-      logger.error("Error from Server. Code: #{e.code} Details: #{e.details}")
+    rescue GRPC::BadStatus, StandardError => e
+      if e.code
+        logger.error("Error from Server. Code: #{e.code} Details: #{e.details}")
+      end
+
+      if e.message
+        logger.error e.message
+      else
+        logger.error e
+      end
+      
       false
     end
 
