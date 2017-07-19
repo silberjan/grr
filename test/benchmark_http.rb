@@ -5,8 +5,12 @@ require "json"
 require "concurrent"
 
 @execution_times, @threads, *rest = ARGV
+@execution_times = @execution_times.to_i
+@threads = @threads.to_i
 
 @http = Net::HTTP.new("localhost", "3001")
+
+@logger = Logger.new(STDOUT)
 
 def time_diff_milli(start, finish)
     (finish - start) * 1000.0
@@ -15,7 +19,7 @@ end
 def rootRequest
 	response = @http.request(Net::HTTP::Get.new("/"))
 
-	puts "Root request - Response Code: #{response.code}"
+	@logger.info "Root request - Response Code: #{response.code}"
 end
 
 def loginRequest
@@ -28,8 +32,8 @@ def loginRequest
 	json = JSON.parse(loginResponse.body)
 	sessionId = json["id"]
 
-	puts "Login Request - Response Code: #{loginResponse.code}"
-	puts "Session ID is: #{sessionId}"
+	@logger.info "Login Request - Response Code: #{loginResponse.code}"
+	@logger.info "Session ID is: #{sessionId}"
 
 	sessionId
 end
@@ -39,7 +43,7 @@ def sessionRequest(sessionId)
 	sessionResponse = @http.request(Net::HTTP::Get.new("/sessions/#{sessionId}?embed=user,permissions,features",{'Accept':'application/json'}))
 	t2 = Time.now
 	msecs = time_diff_milli t1,t2
-	puts "Session Request - Response Code: #{sessionResponse.code} (#{msecs}ms)"
+	@logger.info "Session Request - Response Code: #{sessionResponse.code} (#{msecs}ms)"
 	msecs
 rescue StandardError
   	false
@@ -47,10 +51,10 @@ end
 
 def concurrentRequests(requestArray, threads = 5)
 
-	puts "\n\n"
-	logger.info "-------------------------------------------------"
-	logger.info "\e[32mStarting #{requestArray.size} concurrent HTTP requests\e[0m"
-	logger.info "-------------------------------------------------"
+	putes "\n\n"
+	@logger.info "-------------------------------------------------"
+	@logger.info "\e[32mStarting #{requestArray.size} concurrent HTTP requests\e[0m"
+	@logger.info "-------------------------------------------------"
 	successful = 0
 	failed = 0     
 	totalTime = 0
@@ -61,7 +65,7 @@ def concurrentRequests(requestArray, threads = 5)
 		fallback_policy: :abort
 	)
 
-    puts "Thread pool opened"
+    @logger.info "Thread pool opened"
     t1 = Time.now
 	requestArray.each { |sId|
 		pool.post do
@@ -78,13 +82,13 @@ def concurrentRequests(requestArray, threads = 5)
 	pool.wait_for_termination
 	t2 = Time.now
 	msecs = time_diff_milli t1, t2
-	puts "\n\n"
-	logger.info "---------------------------------------------------------"
-	logger.info "\e[32mCompleted requests:                  #{successful}\e[0m"
-	logger.info "\e[31mFailed requests:                     #{failed}\e[0m"
-	logger.info "\e[36mTotal execution time (incl fails):   #{msecs.round(2)}ms\e[0m"
-	logger.info "\e[35mAverage time/request (successful)    #{(totalTime/successful).round(2)}ms\e[0m"
-	logger.info "---------------------------------------------------------"
+	@logger.info "\n\n"
+	@logger.info "---------------------------------------------------------"
+	@logger.info "\e[32mCompleted requests:                  #{successful}\e[0m"
+	@logger.info "\e[31mFailed requests:                     #{failed}\e[0m"
+	@logger.info "\e[36mTotal execution time (incl fails):   #{msecs.round(2)}ms\e[0m"
+	@logger.info "\e[35mAverage time/request (successful)    #{(totalTime/successful).round(2)}ms\e[0m"
+	@logger.info "---------------------------------------------------------"
 end
 
 def benchmark sId
