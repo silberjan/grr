@@ -45,15 +45,16 @@ def sessionRequest(sessionId)
 	msecs = time_diff_milli t1,t2
 	@logger.info "Session Request - Response Code: #{sessionResponse.code} (#{msecs}ms)"
 	msecs
-rescue StandardError
-  	false
+rescue StandardError => e
+  	@logger.error e
+        false
 end
 
 def concurrentRequests(requestArray, threads = 5)
 
-	putes "\n\n"
+	puts "\n\n"
 	@logger.info "-------------------------------------------------"
-	@logger.info "\e[32mStarting #{requestArray.size} concurrent HTTP requests\e[0m"
+	@logger.info "\e[32mStarting #{requestArray.size} concurrent HTTP requests on #{threads} threads\e[0m"
 	@logger.info "-------------------------------------------------"
 	successful = 0
 	failed = 0     
@@ -82,18 +83,18 @@ def concurrentRequests(requestArray, threads = 5)
 	pool.wait_for_termination
 	t2 = Time.now
 	msecs = time_diff_milli t1, t2
-	@logger.info "\n\n"
+	puts "\n\n"
 	@logger.info "---------------------------------------------------------"
 	@logger.info "\e[32mCompleted requests:                  #{successful}\e[0m"
 	@logger.info "\e[31mFailed requests:                     #{failed}\e[0m"
 	@logger.info "\e[36mTotal execution time (incl fails):   #{msecs.round(2)}ms\e[0m"
-	@logger.info "\e[35mAverage time/request (successful)    #{(totalTime/successful).round(2)}ms\e[0m"
+	@logger.info "\e[35mAverage time/request (successful)    #{successful.zero? ? '-' : (totalTime/successful).round(2)}ms\e[0m"
 	@logger.info "---------------------------------------------------------"
 end
 
 def benchmark sId
-	reqArray = Array.new(@execution_times.to_i || 10, sId)
-    concurrentRequests(reqArray,@threads)
+    reqArray = Array.new(@execution_times.zero? ? 10 : @execution_times, sId)
+    concurrentRequests(reqArray,@threads.zero? ? 5 : @threads)
 end
 
 benchmark "4c1fd429-4917-43e2-9248-0fb36ed6928e"
