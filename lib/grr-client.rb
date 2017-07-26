@@ -7,6 +7,7 @@ require "service/rest_services_pb"
 require "concurrent"
 require "logger"
 require "json"
+require "util/outUtil"
 
 module Grr
   class Client
@@ -15,6 +16,7 @@ module Grr
       host = kwargs.fetch(:Host, "0.0.0.0")
       port = kwargs.fetch(:Port, "50051")
       url = "#{host}:#{port}"
+      @util = Grr::OutUtil.new("gRPC",logger)
       # create client stub for the specified pb service
       @stub = Grr::RestService::Stub.new(url, :this_channel_is_insecure)
     end
@@ -27,7 +29,7 @@ module Grr
       t2 = Time.now
       msecs = time_diff_milli t1, t2
       logger.info("Received Response #{resp.status} in #{msecs}ms")
-      msecs
+      return resp, msecs
     rescue GRPC::BadStatus, StandardError => e
       if e.code
         logger.error("Error from Server. Code: #{e.code} Details: #{e.details}")
@@ -43,12 +45,9 @@ module Grr
     end
 
     # Takes an array of Requests and executes them in parallel
-    def concurrentRequests(requestArray, threads = 5)
+    def concurrentRequests requestArray, threads = 5
       #pool = Concurrent::CachedThreadPool.new
-      puts "\n\n"
-      logger.info "-------------------------------------------------"
-      logger.info "\e[32mStarting #{requestArray.size} concurrent gRPC requests on #{threads} threads\e[0m"
-      logger.info "-------------------------------------------------"
+      @util.printBenchmarkStart requestArray.size,threads
       successful = 0
       failed = 0     
       totalTime = 0
@@ -76,19 +75,11 @@ module Grr
       pool.wait_for_termination
       t2 = Time.now
       msecs = time_diff_milli t1, t2
-      puts "\n\n"
-      logger.info "---------------------------------------------------------"
-      logger.info "\e[32mExecudted #{requestArray.size} concurrent gRPC requests on #{threads} threads\e[0m"
-      logger.info "---------------------------------------------------------"
-      logger.info "\e[32mCompleted requests:                  #{successful}\e[0m"
-      logger.info "\e[31mFailed requests:                     #{failed}\e[0m"
-      logger.info "\e[36mTotal execution time (incl fails):   #{msecs.round(2)}ms\e[0m"
-      logger.info "\e[35mAverage time/request (successful)    #{(totalTime/successful).round(2)}ms\e[0m"
-      logger.info "---------------------------------------------------------"
+      @util.printBenchmarkEnd requestArray.size,threads,successful,failed,msecs,totalTime
     end
 
     private
-    def time_diff_milli(start, finish)
+    def time_diff_milli start, finish
       (finish - start) * 1000.0
     end
 

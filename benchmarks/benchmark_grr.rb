@@ -6,6 +6,7 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 
 require 'grr-client'
 require 'json'
+require 'dotenv/load'
 
 @execution_times, @threads, *rest = ARGV
 @execution_times = @execution_times.to_i
@@ -13,8 +14,7 @@ require 'json'
 
 @logger = Logger.new(STDOUT)
 
-@client = Grr::Client.new(Port: "6575", Host:"localhost" )
-
+@client = Grr::Client.new(Port: ENV["SERVER_HOST"] || "localhost", ENV["SERVER_PORT"] || "3001" )
 
 def rootRequest
     

@@ -1,5 +1,6 @@
 require 'grpc'
-require 'pry'
+require 'logger'
+# require 'pry'
 
 module Grr
   class RackServer

@@ -8,7 +8,7 @@ require "concurrent"
 @execution_times = @execution_times.to_i
 @threads = @threads.to_i
 
-@http = Net::HTTP.new("localhost", "3001")
+@http = Net::HTTP.new( ENV["SERVER_HOST"] || "localhost", ENV["SERVER_PORT"] || "3001")
 
 @logger = Logger.new(STDOUT)
 
