@@ -60,15 +60,15 @@ module Grr
 
       logger.info("Thread pool opened")
       t1 = Time.now
-      requestArray.each { |req|
+      requestArray.each { |sId|
           pool.post do
-              response, msecs = request req
-	        if msecs
-		        successful += 1
-            totalTime += msecs
-	        else
-		        failed += 1
-	        end
+              response, msecs = request sId
+              if response && response.status < 400
+                successful += 1
+                totalTime += msecs
+              else
+                failed += 1
+              end
         end
       }
       pool.shutdown

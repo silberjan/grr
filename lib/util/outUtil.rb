@@ -19,7 +19,7 @@ module Grr
 
             # puts "\n\n"
             @logger.info "---------------------------------------------------------"
-            @logger.info "\e[32mExecudted #{numberOfRequests} concurrent #{@protocol} requests on #{threads} threads\e[0m"
+            @logger.info "\e[32mExecuted #{numberOfRequests} concurrent #{@protocol} requests on #{threads} threads\e[0m"
             @logger.info "---------------------------------------------------------"
             @logger.info "\e[32mCompleted requests:                  #{successful}\e[0m"
             @logger.info "\e[31mFailed requests:                     #{failed}\e[0m"

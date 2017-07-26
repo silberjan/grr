@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'grpc', '~> 1.4'
   spec.add_runtime_dependency 'rack', '~> 2.0'
-  spec.add_runtime_dependency 'concurrent-ruby', '~> 1.0'
+  spec.add_runtime_dependency 'concurrent-ruby', '~> 1.0.5'
   spec.add_runtime_dependency 'json', '~> 2.1'
   spec.add_runtime_dependency 'http_headers', '~> 0.0.2'
 

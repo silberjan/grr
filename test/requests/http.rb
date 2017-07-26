@@ -8,7 +8,7 @@ module RequestBuilder
 
         def initialize(http)
             @http = http
-            @logger  = Logger.new(STDOUT)
+            @logger = Logger.new(STDOUT)
             @util = Grr::OutUtil.new "HTTP",@logger
         end
      
@@ -16,7 +16,7 @@ module RequestBuilder
             @http.request(Net::HTTP::Get.new("/"))
         end
 
-        def loginRequest(userId = "00000001-3100-4444-9999-000000000001")  #Userid of Kevin Cool Jr
+        def loginRequest userId = "00000001-3100-4444-9999-000000000001"  #Userid of Kevin Cool Jr
 
             postHeaders = {'Content-Type': 'application/json', 'Accept': 'application/json'}
             loginRequest = Net::HTTP::Post.new("/sessions",postHeaders)
@@ -25,16 +25,16 @@ module RequestBuilder
             @http.request(loginRequest)
         end
 
-        def sessionRequest(sessionId)
+        def sessionRequest sessionId 
             t1 = Time.now
             sessionResponse = @http.request(Net::HTTP::Get.new("/sessions/#{sessionId}?embed=user,permissions,features",{'Accept':'application/json'}))
             t2 = Time.now
+            @logger.info "Received Response #{sessionResponse.code}"
             msecs = time_diff_milli t1,t2
-            # @logger.info "Session Request - Response Code: #{sessionResponse.code} (#{msecs}ms)"
             return sessionResponse, msecs
         rescue StandardError => e
             @logger.error e
-                false
+            false
         end
 
         def concurrentSessionRequests sId,execution_times_param,threads_param
@@ -62,7 +62,7 @@ module RequestBuilder
             requestArray.each { |sId|
                 pool.post do
                     response, msecs = sessionRequest sId
-                    if msecs
+                    if response && response.code.to_i < 400
                         successful += 1
                         totalTimeSuccessful += msecs
                     else

@@ -23,6 +23,8 @@ def benchmark
 	http = Net::HTTP.new( host, port)
 	requestBuilder  = RequestBuilder::Http.new http
 
+	# p requestBuilder.sessionRequest sessionId
+
 	requestBuilder.concurrentSessionRequests sessionId,execution_times,threads
 
 end
