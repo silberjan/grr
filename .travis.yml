@@ -8,4 +8,12 @@ before_script:
   - ruby ./app.rb &
   - sleep 5
 notifications:
-  slack: hpi:ndJzCSHEaofBnyHTHURo0DFO
+  slack:
+    rooms:
+      - hpi:ndJzCSHEaofBnyHTHURo0DFO
+    on_success: change
+    on_pull_requests: false
+    template:
+          - "Build <%{build_url}|#%{build_number}> of <%{compare_url}|%{branch}> by %{author} %{result}."
+          - "> %{commit_message}"
+  email: false

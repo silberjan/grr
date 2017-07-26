@@ -23,13 +23,13 @@ def benchmark
 
     client = Grr::Client.new(Host: host,Port: port)
 
-    logger.info "requesting login"
+    logger.info "Requesting login"
     requestBuilder = RequestBuilder::Grpc.new client
 
     resp = requestBuilder.loginRequest
     json = JSON.parse(resp.body)
     sessionId = json["id"]
-    logger.info "session id is #{sessionId}"
+    logger.info "Session id is #{sessionId}"
 
     requestBuilder.concurrentSessionRequests sessionId,execution_times,threads
 

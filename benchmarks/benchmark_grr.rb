@@ -23,7 +23,7 @@ def benchmark
 
     client = Grr::Client.new(Host: host,Port: port)
     requestBuilder  = RequestBuilder::Grpc.new client
-
+    logger.info "Using predefined sessionID #{sessionId}"
     requestBuilder.concurrentSessionRequests sessionId,execution_times,threads
 
 end 
