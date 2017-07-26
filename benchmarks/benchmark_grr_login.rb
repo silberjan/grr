@@ -19,14 +19,13 @@ def benchmark
 
     host = ENV["GRR_HOST"] || "localhost"
     port = ENV["GRR_PORT"] || "6575"
-    sessionId = ENV["SESSION_ID"] || "6c0d9ced-13c7-482c-9e33-85ff633d4604"
 
     client = Grr::Client.new(Host: host,Port: port)
 
     logger.info "Requesting login"
     requestBuilder = RequestBuilder::Grpc.new client
 
-    resp = requestBuilder.loginRequest
+    resp, msecs = requestBuilder.loginRequest
     json = JSON.parse(resp.body)
     sessionId = json["id"]
     logger.info "Session id is #{sessionId}"
