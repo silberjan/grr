@@ -6,3 +6,5 @@ before_script:
   - cd ./test
   - bundle exec rackup -r grr -s grr config.ru -o 0.0.0.0 -p 6575 &
   - sleep 5
+notifications:
+  slack: hpi:ndJzCSHEaofBnyHTHURo0DFO
