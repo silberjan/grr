@@ -62,7 +62,7 @@ module Grr
       t1 = Time.now
       requestArray.each { |req|
           pool.post do
-              msecs = request req
+              response, msecs = request req
 	        if msecs
 		        successful += 1
             totalTime += msecs
