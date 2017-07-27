@@ -18,14 +18,17 @@ def benchmark
 
 	host = ENV["GRR_HOST"] || "localhost"
 	port = ENV["HTTP_PORT"] || "4567"
-	sessionId = ENV["SESSION_ID"] || "6c0d9ced-13c7-482c-9e33-85ff633d4604"
+
+	logger = Logger.new(STDOUT)
 
 	requestBuilder  = RequestBuilder::Http.new "#{host}:#{port}"
 
-	# p requestBuilder.sessionRequest sessionId
+	resp, msecs = requestBuilder.loginRequest
+    json = JSON.parse(resp.body)
+    sessionId = json["id"]
+    logger.info "Session id is #{sessionId}"
 
-	requestBuilder.concurrentSessionRequests sessionId,execution_times,threads
-
+    requestBuilder.concurrentSessionRequests sessionId,execution_times,threads
 end
 
 benchmark

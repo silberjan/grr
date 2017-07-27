@@ -9,9 +9,9 @@ task :all => [:test, :grrbenchmark, :httpbenchmark] do
 end
 
 task :grrbenchmark do
-  ruby "benchmarks/benchmark_grr.rb"
+  ruby "benchmarks/benchmark_grr_login.rb"
 end
 
 task :httpbenchmark do
-  ruby "benchmarks/benchmark_http.rb"
+  ruby "benchmarks/benchmark_http_login.rb"
 end

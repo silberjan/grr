@@ -6,28 +6,24 @@ module RequestBuilder
 
     class Http
 
-        def initialize(http)
-            @http = http
+        def initialize(url)
+            @url = url
             @logger = Logger.new(STDOUT)
             @util = Grr::OutUtil.new "HTTP",@logger
         end
      
         def rootRequest
-            @http.request(Net::HTTP::Get.new("/"))
+            RestClient.get @url
         end
 
         def loginRequest userId = "00000001-3100-4444-9999-000000000001"  #Userid of Kevin Cool Jr
-
-            postHeaders = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-            loginRequest = Net::HTTP::Post.new("/sessions",postHeaders)
-            loginRequest.body = "{ \"user\": \"#{userId}\" }"
-
-            @http.request(loginRequest)
+            payload = "{ \"user\": \"#{userId}\" }"
+            RestClient.post "#{@url}/sessions", payload, {content_type: :json, accept: :json}
         end
 
         def sessionRequest sessionId 
             t1 = Time.now
-            sessionResponse = @http.request(Net::HTTP::Get.new("/sessions/#{sessionId}?embed=user,permissions,features",{'Accept':'application/json'}))
+            sessionResponse = RestClient.get "#{@url}/sessions/#{sessionId}?embed=user,permissions,features", {content_type: :json, accept: :json}
             t2 = Time.now
             @logger.info "Received Response #{sessionResponse.code}"
             msecs = time_diff_milli t1,t2
