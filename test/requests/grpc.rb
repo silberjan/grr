@@ -65,8 +65,8 @@ module RequestBuilder
             )
 
             #session = @client.request(sessionRequest)
-            reqArray = Array.new(execution_times.zero? ? 10 : execution_times, sessionRequest)
-            @client.concurrentRequests(reqArray,threads.zero? ? 5 : threads)
+            reqArray = Array.new(execution_times.zero? ? 100 : execution_times, sessionRequest)
+            @client.concurrentRequests(reqArray,threads.zero? ? 10 : threads)
 
         end
 

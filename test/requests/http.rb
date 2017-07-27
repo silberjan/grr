@@ -35,8 +35,8 @@ module RequestBuilder
 
         def concurrentSessionRequests sId,execution_times_param,threads_param
 
-            execution_times = execution_times_param.zero? ? 10 : execution_times_param
-            threads = threads_param.zero? ? 5 : threads_param
+            execution_times = execution_times_param.zero? ? 100 : execution_times_param
+            threads = threads_param.zero? ? 10 : threads_param
 
             requestArray = Array.new execution_times, sId
 
