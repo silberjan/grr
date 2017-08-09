@@ -1,3 +1,5 @@
+# rubocop:disable all
+
 module Grr
   # Grpc service implementation
   class GrpcServer < Grr::RestService::Service
@@ -7,37 +9,53 @@ module Grr
     def initialize(app, logger)
       @app = app
       @logger = logger
+      @mutex = Mutex.new
+
+      # logf = File.open('trace.log', 'w+')
+
+      # set_trace_func proc {|event, file, line, id, _binding, classname|
+      #   logf << format("[#{Thread.object_id}] %8s %s:%-2d %10s %8s\n",
+      #                  event, file, line, id, classname)
+      # }
     end
 
     # do_request implements the DoRequest rpc method.
     def do_request(rest_req, _call)
+      # @mutex.synchronize do
+        logger.info("Grpc-Rest requested received. Location: #{rest_req.location};")
 
-      logger.info("Grpc-Rest requested received. Location: #{rest_req.location};")
+        # Duplicate is needed, because rest_req['body'] is frozen.
+        bodyDup = rest_req['body'].dup
+        bodyDup.force_encoding "ASCII-8BIT" # Rack rquires this encoding
+        qsDup = rest_req['queryString'].dup
+        qsDup.force_encoding "ASCII-8BIT"
 
-      # Duplicate is needed, because rest_req['body'] is frozen.
-      bodyDup = rest_req['body'].dup
-      bodyDup.force_encoding "ASCII-8BIT" # Rack rquires this encoding
-      qsDup = rest_req['queryString'].dup
-      qsDup.force_encoding "ASCII-8BIT"
+        # Create rack env for the request
+        env = new_env(rest_req['method'],rest_req['location'],qsDup,bodyDup)
 
-      # Create rack env for the request
-      env = new_env(rest_req['method'],rest_req['location'],qsDup,bodyDup)
+        logger.info "[#{Thread.object_id}] ==> #{env['REQUEST_METHOD']} #{env['REQUEST_PATH']}"
 
-      # Execute the app's .call() method (Rack standard)
-      # blocks execution, sync call
-      t1 = Time.now
-      # binding.pry
-      status, headers, body = app.call(env)
-      t2 = Time.now
-      msecs = time_diff_milli t1, t2
-      logger.info "Got code #{status} (#{msecs.round(2)}ms)"
+        # Execute the app's .call() method (Rack standard)
+        # blocks execution, sync call
+        t1 = Time.now
+        # binding.pry
+        status, headers, body = app.clone.call(env)
+        t2 = Time.now
+        msecs = time_diff_milli t1, t2
 
-      # Parse the body (may be chunked)
-      bodyString = reassemble_chunks(body)
-      # File.write('./out.html',bodyString) # For debugging. Errors are returned in html sometimes, hard to read on the command line.
+        logger.info "[#{Thread.object_id}] <== #{status} (#{msecs.round(2)}ms)"
 
-      # Create new Response Object
-      Grr::RestResponse.new(headers: headers.to_s, status: status, body: bodyString)
+        # Parse the body (may be chunked)
+        bodyString = reassemble_chunks(body)
+        # File.write('./out.html',bodyString) # For debugging. Errors are returned in html sometimes, hard to read on the command line.
+
+        # Create new Response Object
+        Grr::RestResponse.new(headers: headers.to_s, status: status, body: bodyString)
+      # end
+    rescue => err
+      logger.error "[#{Thread.object_id}] === #{err}"
+    ensure
+      logger.info "[#{Thread.object_id}] === do_request returned"
     end
 
     # Rack needs ad ENV to process the request
@@ -58,13 +76,13 @@ module Grr
         'SERVER_PORT'      => '6575',
         'HTTP_HOST'        => 'localhost:6575',
         'HTTP_USER_AGENT'  => 'grr/0.1.0',
-        'SERVER_PROTOCOL'  => 'HTTP/1.1',
-        'HTTP_VERSION'     => 'HTTP/1.1',
+        'SERVER_PROTOCOL'  => 'HTTP/1.0',
+        'HTTP_VERSION'     => 'HTTP/1.0',
         'rack.version'     => Rack.version.split('.'),
         'rack.url_scheme'  => 'http',
         'rack.input'       => StringIO.new(body),
         'rack.errors'      => StringIO.new(''),
-        'rack.multithread' => false,
+        'rack.multithread' => true,
         'rack.run_once'    => false,
         'rack.multiprocess'=> false,
       }

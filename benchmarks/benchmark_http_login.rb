@@ -11,24 +11,23 @@ require 'rest-client'
 require_relative '../test/requests/http'
 
 def benchmark
+  execution_times, threads, *rest = ARGV
+  execution_times = execution_times.to_i
+  threads = threads.to_i
 
-	execution_times, threads, *rest = ARGV
-	execution_times = execution_times.to_i
-	threads = threads.to_i
+  host = ENV['GRR_HOST'] || 'localhost'
+  port = ENV['HTTP_PORT'] || '4567'
 
-	host = ENV["GRR_HOST"] || "localhost"
-	port = ENV["HTTP_PORT"] || "4567"
+  logger = Logger.new(STDOUT)
 
-	logger = Logger.new(STDOUT)
+  requestBuilder = RequestBuilder::Http.new "#{host}:#{port}"
 
-	requestBuilder  = RequestBuilder::Http.new "#{host}:#{port}"
+  resp, msecs = requestBuilder.loginRequest
+  json = JSON.parse(resp.body)
+  sessionId = json['id']
+  logger.info "Session id is #{sessionId}"
 
-	resp, msecs = requestBuilder.loginRequest
-    json = JSON.parse(resp.body)
-    sessionId = json["id"]
-    logger.info "Session id is #{sessionId}"
-
-    requestBuilder.concurrentSessionRequests sessionId,execution_times,threads
+  requestBuilder.concurrentSessionRequests sessionId, execution_times, threads
 end
 
 benchmark
