@@ -1,4 +1,4 @@
-# GRR [![Build Status](https://travis-ci.org/j-slvr/grr-server.svg?branch=master)](https://travis-ci.org/j-slvr/grr-server) [![GitHub release](https://img.shields.io/github/release/j-slvr/grr.svg)]()
+# GRR [![Build Status](https://travis-ci.org/j-slvr/grr.svg?branch=master)](https://travis-ci.org/j-slvr/grr-server) [![GitHub release](https://img.shields.io/github/release/j-slvr/grr.svg)]()
 
 > GRR (Grpc Rest Ruby) is a Rack-compliant gRPC server for REST Requests. It is designed to be used for microservice inter-communication in an environment where REST-compliant APIs are already in place. GRR takes REST syntax, wraps it in a protocol buffer and sends the binary request to the server via HTTP/2. On the server side it passes the REST-like object to a rack-compliant app.
 
