@@ -70,6 +70,22 @@ module RequestBuilder
 
         end
 
+        def streamRequests(sId,execution_times)
+            
+            sessionRequest = Grr::RestRequest.new(
+                method:       "GET",
+                location:     "/sessions/" + sId, 
+                queryString:  "embed=user,permissions,features", 
+                headers:      "Accept: text/plain, Content-Type: application/json",
+                body:         ""
+            )
+
+            #session = @client.request(sessionRequest)
+            reqArray = Array.new(execution_times.zero? ? 100 : execution_times, sessionRequest)
+            @client.streamRequests(reqArray)
+
+        end
+
     end
 
 end

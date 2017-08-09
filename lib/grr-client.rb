@@ -21,6 +21,11 @@ module Grr
       @stub = Grr::RestService::Stub.new(url, :this_channel_is_insecure)
     end
 
+    def streamRequests(reqEnumerable)
+      resps = @stub.stream_requests(reqEnumerable)
+      resps.each { |r| p "received #{r.status}" }
+    end
+
     # Takes a Request Object and executes it
     def request(req)
       t1 = Time.now

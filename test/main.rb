@@ -42,4 +42,10 @@ describe Grr::Client do
     end
   end
 
+  describe "when doing streaming requests" do
+    it "must not fail" do
+      @RequestBuilder.streamRequests("6c0d9ced-13c7-482c-9e33-85ff633d4604",20)
+    end
+  end
+
 end

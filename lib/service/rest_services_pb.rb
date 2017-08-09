@@ -18,6 +18,7 @@ module Grr
       self.service_name = 'grr.RestService'
 
       rpc :DoRequest, RestRequest, RestResponse
+      rpc :StreamRequests, stream(RestRequest), stream(RestResponse)
     end
 
     Stub = Service.rpc_stub_class

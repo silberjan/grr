@@ -6,8 +6,8 @@ package grr;
 
 service RestService {
   rpc DoRequest (RestRequest) returns (RestResponse) {}
+  rpc StreamRequests (stream RestRequest) returns (stream RestResponse) {}
 }
-
 
 message RestRequest {
   string method = 1;

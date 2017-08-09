@@ -1,4 +1,5 @@
-module Grr
+module Grr  
+
   # Grpc service implementation
   class GrpcServer < Grr::RestService::Service
 
@@ -9,19 +10,33 @@ module Grr
       @logger = logger
     end
 
+    def stream_requests(requests)
+      requests.each do |request|
+        headers,status,bodyString = rack_call(request)
+        # Create new Response Object
+        Grr::RestResponse.new(headers: headers, status: status, body: bodyString)
+      end
+    end
+
     # do_request implements the DoRequest rpc method.
-    def do_request(rest_req, _call)
+    def do_request(request, _call)
+      headers,status,bodyString = rack_call(request)
+      # Create new Response Object
+      Grr::RestResponse.new(headers: headers, status: status, body: bodyString)
+    end
 
-      logger.info("Grpc-Rest requested received. Location: #{rest_req.location};")
+    private 
+    def rack_call(request)
+      logger.info("Grpc-Rest requested received. Location: #{request.location};")
 
-      # Duplicate is needed, because rest_req['body'] is frozen.
-      bodyDup = rest_req['body'].dup
+      # Duplicate is needed, because request['body'] is frozen.
+      bodyDup = request['body'].dup
       bodyDup.force_encoding "ASCII-8BIT" # Rack rquires this encoding
-      qsDup = rest_req['queryString'].dup
+      qsDup = request['queryString'].dup
       qsDup.force_encoding "ASCII-8BIT"
 
       # Create rack env for the request
-      env = new_env(rest_req['method'],rest_req['location'],qsDup,bodyDup)
+      env = new_env(request['method'],request['location'],qsDup,bodyDup)
 
       # Execute the app's .call() method (Rack standard)
       # blocks execution, sync call
@@ -35,9 +50,7 @@ module Grr
       # Parse the body (may be chunked)
       bodyString = reassemble_chunks(body)
       # File.write('./out.html',bodyString) # For debugging. Errors are returned in html sometimes, hard to read on the command line.
-
-      # Create new Response Object
-      Grr::RestResponse.new(headers: headers.to_s, status: status, body: bodyString)
+      return headers.to_s, status, bodyString
     end
 
     # Rack needs ad ENV to process the request
@@ -75,6 +88,7 @@ module Grr
       (finish - start) * 1000.0
     end
 
+    private
     def reassemble_chunks raw_data
       reassembled_data = ""
       position = 0
