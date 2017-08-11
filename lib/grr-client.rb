@@ -22,17 +22,17 @@ module Grr
     end
 
     # Takes a Request Object and executes it
-    def request(req)
+    def request(req, idx = nil)
       t1 = Time.now
       # logger.info("Start REST request")
       resp = @stub.do_request(req)
       t2 = Time.now
       msecs = time_diff_milli t1, t2
-      logger.info("Received Response #{resp.status} in #{msecs}ms")
+      logger.info("[#{idx}] Received Response #{resp.status} in #{msecs}ms")
       return resp, msecs
     rescue GRPC::BadStatus, StandardError => e
       if e.code
-        logger.error("Error from Server. Code: #{e.code} Details: #{e.details}")
+        logger.error("[#{idx}] Error from Server. Code: #{e.code} Details: #{e.details}")
       end
 
       if e.message
@@ -40,7 +40,7 @@ module Grr
       else
         logger.error e
       end
-      
+
       false
     end
 
@@ -49,7 +49,7 @@ module Grr
       #pool = Concurrent::CachedThreadPool.new
       @util.printBenchmarkStart requestArray.size,threads
       successful = 0
-      failed = 0     
+      failed = 0
       totalTime = 0
       pool = Concurrent::ThreadPoolExecutor.new(
          min_threads: threads,
@@ -60,9 +60,9 @@ module Grr
 
       logger.info("Thread pool opened")
       t1 = Time.now
-      requestArray.each { |sId|
+      requestArray.each_with_index {|sId, idx|
           pool.post do
-              response, msecs = request sId
+              response, msecs = request sId, idx
               if response && response.status < 400
                 successful += 1
                 totalTime += msecs
