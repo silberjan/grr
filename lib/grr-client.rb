@@ -28,7 +28,7 @@ module Grr
       resp = @stub.do_request(req)
       t2 = Time.now
       msecs = time_diff_milli t1, t2
-      logger.info("Received Response #{resp.status} in #{msecs}ms")
+      logger.info("Received Response #{resp.status} in #{msecs}ms ( #{resp.body.to_s.bytesize / 1024.0}KB)")
       return resp, msecs
     rescue GRPC::BadStatus, StandardError => e
       if e.code

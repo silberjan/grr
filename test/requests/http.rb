@@ -25,7 +25,7 @@ module RequestBuilder
             t1 = Time.now
             sessionResponse = RestClient.get "#{@url}/sessions/#{sessionId}?embed=user,permissions,features", {content_type: :json, accept: :json}
             t2 = Time.now
-            @logger.info "Received Response #{sessionResponse.code}"
+            @logger.info "Received Response #{sessionResponse.code} ( #{sessionResponse.to_s.bytesize / 1024.0}KB)"
             msecs = time_diff_milli t1,t2
             return sessionResponse, msecs
         rescue StandardError => e
